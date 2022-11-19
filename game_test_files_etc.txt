@@ -1,0 +1,84 @@
+<img src="data:image/png;base64,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" alt="" />
+
+
+switch(map_index) {
+            case 0:
+              // code block
+              break;
+            case 1:
+              // code block
+              break;
+            default:
+              // code block
+          } 
+		  
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVAAAAAYBAMAAABeurhfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAwUExURb29Ojq9vVpjWhkpId46KZw6vVprSpS9vTrWOjo6jDqMOt46vZw6Ot69vTo63mMpMbMsG/UAAAAJcEhZcwAADsEAAA7BAbiRa+0AAAGhSURBVFjDxdc7ksMgDADQnIVCF9DMptrOJ1FmdIGtc8otUvkuizFEMj/LONmoIh5FPLCx4TI/sBL32a0BzIzIIcIFTA0dPsc1QleNuUts8rFScolJxaXq9NIOlD4C/U0MHYjfLSjXodyCSlHiZ8UcClK/Cf2pOH2dq+onQekclNtQNkDxqwa9YQmleKF0Lp2boa4FdS+GVpz/A+VqYOi+Am1xDFDXhQINQ5fuFdTL21KwQ6EOrfz3CFRWPYUZPhwl1J2HLixIUJCiZ6HkNtAweEcjUAKQ3BUqr02B0iA0NrZQkbEdqgvGZ4jX1fMKKMWqOZRSxiFofGkDCZQTOkKH4jl8lz2jMoDnrNigroSmhdV6z5mgZStB5YcVqpK4DfUf69FpDQE5VDqw3nqSJ70HPTGvmxiHskBJVv04lEagZIKqTzich3azgOpQtkFVoRx6Q71x2WcC7+0Lson4EBT4fVAqnLoQXvXm2uTsQbkFpWPQopA/lujjig3KewPBtKk4DdUHvUd+QOtDEffGs62PtqNInlFA77M+Uu9B+S3QafoD02+JLmDjNHkAAAAASUVORK5CYII=
+
+//check what type of tile it is
+            //sx and sy are positions in the tile set
+            let sx = 0;
+            let sy = 0;
+            //find what kind of tile
+            switch (map_index) {
+                case 1:
+                    sx = 0
+                    sy = 0
+                    break;
+                case 2:
+                    sx = tile_size
+                    sy = 0
+                    break;
+                case 3:
+                    sx = tile_size * 2
+                    sy = 0
+                    break;
+                case 4:
+                    sx = 0
+                    sy = tile_size
+                    break;
+                case 5:
+                    sx = tile_size
+                    sy = tile_size
+                    break;
+                case 6:
+                    sx = tile_size * 2
+                    sy = tile_size
+                    break;
+                case 7:
+                    sx = 0
+                    sy = tile_size * 2
+                    break;
+                case 8:
+                    sx = tile_size
+                    sy = tile_size * 2
+                    break;
+                case 9:
+                    sx = tile_size * 2
+                    sy = tile_size * 2
+                    break;
+                default:
+                    //this is if it isn't a known tile
+                    case 7:
+                    sx = 0
+                    sy = tile_size * 2
+                    break;
+            }
+			
+let map_index = maps[0][0][0][i + j * width]
+
+
+if (py_velocity > 0){
+        if (collision("down", py_velocity)){
+        py += py_velocity}
+        else{
+            inair = false
+            py_velocity = 0
+        }
+    }
+    else if (py_velocity < 0){
+        if (collision("up", -py_velocity)){
+        py += py_velocity}
+        else{
+            py_velocity = 0
+        }
+    }

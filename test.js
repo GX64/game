@@ -147,8 +147,19 @@ function collision(direction, change, map) {
     }
 }
 
+let secondsPassed;
+let oldTimeStamp;
+let fps;
+
 //game rendering / loop
-function game(map) {
+function game(timestamp) {
+    secondsPassed = (timestamp - oldTimeStamp) / 1000;
+    oldTimeStamp = timestamp;
+    console.log(secondsPassed)
+    // Calculate fps
+    fps = Math.round(1 / secondsPassed);
+
+    map = test_map
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     render_tiles(map);
 
@@ -250,6 +261,8 @@ function game(map) {
 
     document.getElementById("py v").innerHTML = py_velocity;
 
+    document.getElementById("fps").innerHTML = fps;
+
     //store covered tile boundaries
     tile_left = Math.floor(px / tile_size)
     tile_right = Math.floor((px + player_width) / tile_size)
@@ -259,7 +272,9 @@ function game(map) {
     document.getElementById("blocks").innerHTML = [tile_left, tile_right, tile_up, tile_down];
     ctx.drawImage(player_sprite, px, py)
     //ctx.drawImage(img, , ,24,24,i*24,j*24,24,24)}
+    window.requestAnimationFrame(game)
 }
 
 //how many times a second render the game
-setInterval(game, 1000 / 60, test_map)
+//setInterval(game, 1000 / 60, test_map)
+window.requestAnimationFrame(game)

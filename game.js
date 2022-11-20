@@ -98,7 +98,7 @@ function map_collision_allow(change_x, change_y, map) {
     let array = [true, true, true, true]
     let new_right = Math.floor((px + player_width + change_x) / tile_size)
     //check at all heights that the player is in
-    for (let i = tile_up; i < tile_down; i++) {
+    for (let i = tile_up; i <= tile_down; i++) {
         //this is the tile the player will be going into
         let tile_hit = map[new_right + i * map_tile_width]
         //if it is not "air"
@@ -107,7 +107,7 @@ function map_collision_allow(change_x, change_y, map) {
         }
     }
     let new_left = Math.floor((px - change_x) / tile_size)
-    for (let i = tile_up; i < tile_down; i++) {
+    for (let i = tile_up; i <= tile_down; i++) {
         let tile_hit = map[new_left + i * map_tile_width]
         if (tile_hit !== 0) {
             array[2] = false
@@ -115,14 +115,14 @@ function map_collision_allow(change_x, change_y, map) {
     }
 
     let new_up = Math.floor((py - change_y) / tile_size)
-    for (let i = tile_left; i < tile_right; i++) {
+    for (let i = tile_left; i <= tile_right; i++) {
         let tile_hit = map[i + new_up * map_tile_width]
         if (tile_hit !== 0) {
             array[0] = false
         }
     }
     let new_down = Math.floor((py + player_height + change_y) / tile_size)
-    for (let i = tile_left; i < tile_right; i++) {
+    for (let i = tile_left; i <= tile_right; i++) {
         let tile_hit = map[i + new_down * map_tile_width]
         if (tile_hit !== 0) {
             array[1] = false
@@ -261,10 +261,10 @@ function game(timestamp) {
     document.getElementById("collision").innerHTML = map_collision_allow(0, 0, map);
 
     //store covered tile boundaries
-    tile_left = Math.floor(px / tile_size)
-    tile_right = Math.floor((px + player_width) / tile_size)
-    tile_up = Math.floor(py / tile_size)
-    tile_down = Math.floor((py + player_height) / tile_size)
+    tile_left = Math.floor((px + 1)/ tile_size)
+    tile_right = Math.floor((px + player_width - 1) / tile_size)
+    tile_up = Math.floor((py + 1) / tile_size)
+    tile_down = Math.floor((py + player_height -1) / tile_size)
 
     document.getElementById("blocks").innerHTML = [tile_left, tile_right, tile_up, tile_down];
     ctx.drawImage(player_sprite, px, py)

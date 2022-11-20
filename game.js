@@ -76,8 +76,8 @@ const player_height = 32;
 const player_width = 16;
 
 //px and py are player position. filled in with temporary testing start position
-var px = 440;
-var py = 70;
+var px = 400;
+var py = 80;
 
 //player velocity
 var px_velocity = 0;
@@ -93,9 +93,62 @@ var tile_down = 0;
 var inair = true
 
 //function for calculating map_collision with a given potential offset - might need to change
-function map_collision_allow(change_x, change_y, map) {
+function map_collision_allow_distance(change_x, change_y, map) {
     //create array of map collisions [up,down,left,right]
-    let array = [true, true, true, true]
+    let up_distance = 10
+    let down_distance = 0
+    let left_distance = 0
+    let right_distance = 0
+
+    
+
+    //done looking for tile
+    let hit = true
+    //up_distance is the distance it is allowed to move up
+    up_distance = change_y
+    console.log(up_distance)
+    //while it is not 0 and hitting something. If it reaches 0 it means it can't "not move" any further
+    while (up_distance > 0 && hit) {
+        let new_up = Math.floor((py - up_distance) / tile_size)
+        for (let i = tile_left; i <= tile_right; i++) {
+            let tile_hit = map[i + new_up * map_tile_width]
+            if (tile_hit == 0) {
+                console.log("not hitting")
+                hit = false
+            }
+            //try moving less far
+            console.log("hit")
+            up_distance -= 1
+
+        }
+        console.log(up_distance)
+    }
+    //if it didn't hit, restore change y
+    console.log(hit)
+    /*
+    if (!hit){
+        up_distance = change_y
+    }
+    */
+    console.log(change_y)
+
+    console.log(up_distance)
+    //now we should have a new up_distance that doesn't go into a tile. return this so that it can move this distance
+    /*
+    let new_down = Math.floor((py + player_height + change_y) / tile_size)
+    for (let i = tile_left; i <= tile_right; i++) {
+        let tile_hit = map[i + new_down * map_tile_width]
+        if (tile_hit !== 0) {
+            array[1] = false
+        }
+    }
+    let new_left = Math.floor((px - change_x) / tile_size)
+    for (let i = tile_up; i <= tile_down; i++) {
+        let tile_hit = map[new_left + i * map_tile_width]
+        if (tile_hit !== 0) {
+            array[2] = false
+        }
+    }
     let new_right = Math.floor((px + player_width + change_x) / tile_size)
     //check at all heights that the player is in
     for (let i = tile_up; i <= tile_down; i++) {
@@ -106,29 +159,8 @@ function map_collision_allow(change_x, change_y, map) {
             array[3] = false
         }
     }
-    let new_left = Math.floor((px - change_x) / tile_size)
-    for (let i = tile_up; i <= tile_down; i++) {
-        let tile_hit = map[new_left + i * map_tile_width]
-        if (tile_hit !== 0) {
-            array[2] = false
-        }
-    }
-
-    let new_up = Math.floor((py - change_y) / tile_size)
-    for (let i = tile_left; i <= tile_right; i++) {
-        let tile_hit = map[i + new_up * map_tile_width]
-        if (tile_hit !== 0) {
-            array[0] = false
-        }
-    }
-    let new_down = Math.floor((py + player_height + change_y) / tile_size)
-    for (let i = tile_left; i <= tile_right; i++) {
-        let tile_hit = map[i + new_down * map_tile_width]
-        if (tile_hit !== 0) {
-            array[1] = false
-        }
-    }
-    console.log(array)
+    */
+    let array = [up_distance, down_distance, left_distance, right_distance]
     return array
 }
 
@@ -137,7 +169,7 @@ function game(timestamp) {
     //time / fps related
     secondsPassed = (timestamp - oldTimeStamp) / 1000;
     oldTimeStamp = timestamp;
-    console.log(secondsPassed)
+    //console.log(secondsPassed)
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
 
@@ -243,30 +275,38 @@ function game(timestamp) {
     */
 
     //temporary movement
-    if (rightPressed && map_collision_allow(0, 0, map)[3])
+    /*
+    if (rightPressed && map_collision_allow_distance(0, 0, map)[3])
         px += 1
-    if (leftPressed && map_collision_allow(0, 0, map)[2])
+    if (leftPressed && map_collision_allow_distance(0, 0, map)[2])
         px -= 1
-    if (upPressed && map_collision_allow(0, 0, map)[0])
-        py -= 1
-    if (downPressed && map_collision_allow(0, 0, map)[1])
+    */
+        if (upPressed) {
+        console.log("up")
+        //have to add 2 for some reason???
+        distance = map_collision_allow_distance(0,22,map)[0]
+        console.log(distance)
+        py -= Math.min(20,distance)
+    }
+    /*
+    if (downPressed && map_collision_allow_distance(0, 0, map)[1])
         py += 1
-
+*/
     //debug info on screen
     document.getElementById("px").innerHTML = px;
     document.getElementById("py").innerHTML = py;
 
     document.getElementById("py v").innerHTML = py_velocity;
 
-    document.getElementById("collision").innerHTML = map_collision_allow(0, 0, map);
+    //document.getElementById("collision").innerHTML = map_collision_allow_distance(0, 0, map);
 
     //store covered tile boundaries
-    tile_left = Math.floor((px + 1)/ tile_size)
+    tile_left = Math.floor((px + 1) / tile_size)
     tile_right = Math.floor((px + player_width - 1) / tile_size)
     tile_up = Math.floor((py + 1) / tile_size)
-    tile_down = Math.floor((py + player_height -1) / tile_size)
+    tile_down = Math.floor((py + player_height - 1) / tile_size)
 
-    document.getElementById("blocks").innerHTML = [tile_left, tile_right, tile_up, tile_down];
+    document.getElementById("blocks").innerHTML = [tile_up, tile_down, tile_left, tile_right];
     ctx.drawImage(player_sprite, px, py)
     //ctx.drawImage(img, , ,24,24,i*24,j*24,24,24)}
     window.requestAnimationFrame(game)

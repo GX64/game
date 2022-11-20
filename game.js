@@ -3,8 +3,8 @@ var canvas = document.getElementById('my-canvas');
 var ctx = canvas.getContext("2d");
 const tile_size = 24
 //dimensions of map in amount of tiles
-const width = 26
-const height = 20
+const map_tile_width = 26
+const map_tile_height = 20
 //create image
 const tileset = new Image();   // Create new img element
 //use base64 https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#embedding_an_image_via_data_url https://ezgif.com/image-to-datauri/ezgif-2-08a7ed4685.png
@@ -15,10 +15,10 @@ let test_map = maps[0][0][3]
 
 //use two for loops to go through entire map
 function render_tiles(map) {
-    for (let j = 0; j < height; j++) {
-        for (let i = 0; i < width; i++) {
+    for (let j = 0; j < map_tile_height; j++) {
+        for (let i = 0; i < map_tile_width; i++) {
             //get the current position on the map
-            let map_index = map[i + j * width]
+            let map_index = map[i + j * map_tile_width]
             //check if there is ground
             if (map_index !== 0) {
                 //drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
@@ -29,30 +29,11 @@ function render_tiles(map) {
     }
 }
 
-const player_height = 32;
-const player_width = 16;
-
 //if they key is pressed or not
 let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
 let downPressed = false;
-
-//player position. filled in with temporary testing start position
-var px = 440;
-var py = 70;
-
-//player velocity
-var px_velocity = 0;
-var py_velocity = 0;
-
-//player nearby tiles
-var tile_left = 0;
-var tile_right = 0;
-var tile_up = 0;
-var tile_down = 0;
-
-var inair = true
 
 //create the player sprite
 const player_sprite = new Image();
@@ -86,83 +67,88 @@ function keyUpHandler(e) {
     }
 }
 
-//function for calculating collision
-function collision(direction, change, map) {
-    //return true if it can move in that direction, false if it can not
-    //if it is moving a tile further left
-    if (direction == "right") {
-        //new_right is the potential new position
-        let new_right = Math.floor((px + player_width + change) / tile_size)
-        // if it is going into a new block
-        if (new_right > tile_right) {
-            //check at all heights that the player is in
-            for (let i = tile_up; i <= tile_down; i++) {
-                //this is the tile the player will be going into
-                let tile_hit = map[new_right + i * width]
-                //if it is not "air"
-                if (tile_hit !== 0) {
-                    return false
-                }
-            }
-        }
-        //it is not hitting anything
-        return true
-    }
-    else if (direction == "left") {
-        let new_left = Math.floor((px - change) / tile_size)
-        if (new_left < tile_left) {
-            for (let i = tile_up; i <= tile_down; i++) {
-                let tile_hit = map[new_left + i * width]
-                if (tile_hit !== 0) {
-                    return false
-                }
-            }
-        }
-        return true
-
-    }
-    else if (direction == "up") {
-        let new_up = Math.floor((py - change) / tile_size)
-        if (new_up < tile_up) {
-            for (let i = tile_left; i <= tile_right; i++) {
-                let tile_hit = map[i + new_up * width]
-                if (tile_hit !== 0) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-    else if (direction == "down") {
-        let new_down = Math.floor((py + player_height + change) / tile_size)
-        if (new_down > tile_down) {
-            for (let i = tile_left; i <= tile_right; i++) {
-                let tile_hit = map[i + new_down * width]
-                if (tile_hit !== 0) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-}
-
 let secondsPassed;
 let oldTimeStamp;
 let fps;
 
+//player constants
+const player_height = 32;
+const player_width = 16;
+
+//px and py are player position. filled in with temporary testing start position
+var px = 440;
+var py = 70;
+
+//player velocity
+var px_velocity = 0;
+var py_velocity = 0;
+
+//player nearby tiles
+var tile_left = 0;
+var tile_right = 0;
+var tile_up = 0;
+var tile_down = 0;
+
+//used for physics/ prevening jumping - might not be necessary
+var inair = true
+
+//function for calculating map_collision with a given potential offset - might need to change
+function map_collision_allow(change_x, change_y, map) {
+    //create array of map collisions [up,down,left,right]
+    let array = [true, true, true, true]
+    let new_right = Math.floor((px + player_width + change_x) / tile_size)
+    //check at all heights that the player is in
+    for (let i = tile_up; i < tile_down; i++) {
+        //this is the tile the player will be going into
+        let tile_hit = map[new_right + i * map_tile_width]
+        //if it is not "air"
+        if (tile_hit !== 0) {
+            array[3] = false
+        }
+    }
+    let new_left = Math.floor((px - change_x) / tile_size)
+    for (let i = tile_up; i < tile_down; i++) {
+        let tile_hit = map[new_left + i * map_tile_width]
+        if (tile_hit !== 0) {
+            array[2] = false
+        }
+    }
+
+    let new_up = Math.floor((py - change_y) / tile_size)
+    for (let i = tile_left; i < tile_right; i++) {
+        let tile_hit = map[i + new_up * map_tile_width]
+        if (tile_hit !== 0) {
+            array[0] = false
+        }
+    }
+    let new_down = Math.floor((py + player_height + change_y) / tile_size)
+    for (let i = tile_left; i < tile_right; i++) {
+        let tile_hit = map[i + new_down * map_tile_width]
+        if (tile_hit !== 0) {
+            array[1] = false
+        }
+    }
+    console.log(array)
+    return array
+}
+
 //game rendering / loop
 function game(timestamp) {
+    //time / fps related
     secondsPassed = (timestamp - oldTimeStamp) / 1000;
     oldTimeStamp = timestamp;
     console.log(secondsPassed)
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
 
+    //set map
     map = test_map
+    //clear sceen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //render map
     render_tiles(map);
 
+    /* temporarily commenting out existing physics
     const px_ac = 0.5
     const friction = 1.2
     const max_velocity_x = 5
@@ -198,7 +184,7 @@ function game(timestamp) {
     }
     //update position
     if (px_velocity > 0) {
-        if (collision("right", px_velocity, map)) {
+        if (map_collision_allow(map)[3]) {
             px += px_velocity
         }
         else {
@@ -206,7 +192,7 @@ function game(timestamp) {
         }
     }
     else if (px_velocity < 0) {
-        if (collision("left", -px_velocity,map)) {
+        if (map_collision_allow(map)[2]) {
             px += px_velocity
         }
         else {
@@ -226,7 +212,7 @@ function game(timestamp) {
         py_velocity -= jump;
     }
     else {
-        
+
         py_velocity += gravity;
         if (py_velocity > max_fall_velocity) {
             py_velocity = max_fall_velocity;
@@ -237,8 +223,8 @@ function game(timestamp) {
     //update position
     if (py_velocity > 0) {
         //don't know why it only works at 1.1 and not 1
-        if (collision("down", py_velocity*1.1,map)) {
-            inair=true
+        if (map_collision_allow(map)[1]) {
+            inair = true
             py += py_velocity
         }
         else {
@@ -247,13 +233,24 @@ function game(timestamp) {
         }
     }
     else if (py_velocity < 0) {
-        if (collision("up", -py_velocity,map)) {
+        if (map_collision_allow(map)[0]) {
             py += py_velocity
         }
         else {
             py_velocity = 0
         }
     }
+    */
+
+    //temporary movement
+    if (rightPressed && map_collision_allow(0, 0, map)[3])
+        px += 1
+    if (leftPressed && map_collision_allow(0, 0, map)[2])
+        px -= 1
+    if (upPressed && map_collision_allow(0, 0, map)[0])
+        py -= 1
+    if (downPressed && map_collision_allow(0, 0, map)[1])
+        py += 1
 
     //debug info on screen
     document.getElementById("px").innerHTML = px;
@@ -261,7 +258,7 @@ function game(timestamp) {
 
     document.getElementById("py v").innerHTML = py_velocity;
 
-    document.getElementById("fps").innerHTML = fps;
+    document.getElementById("collision").innerHTML = map_collision_allow(0, 0, map);
 
     //store covered tile boundaries
     tile_left = Math.floor(px / tile_size)
